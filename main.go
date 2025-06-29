@@ -8,14 +8,16 @@ import (
 )
 
 func main() {
-	conn, err := coinmarket.Subscribe(coinmarket.CurrencyLTC)
+	conn, err := coinmarket.Subscribe(coinmarket.CurrencyLTC, coinmarket.CurrencyBTC)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for {
 		<-time.After(time.Second)
-		fmt.Printf("$%.2f\n", conn.Price())
-		fmt.Println(conn.PercentChange())
+		p, _ := conn.Price(coinmarket.CurrencyLTC)
+		fmt.Printf("$%.2f\n", p)
+		p, _ = conn.Price(coinmarket.CurrencyBTC)
+		fmt.Printf("$%.2f\n", p)
 	}
 }

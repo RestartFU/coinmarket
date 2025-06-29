@@ -8,16 +8,12 @@ import (
 type Conn struct {
 	conn *websocket.Conn
 
-	data cryptoData
+	data map[int]cryptoData
 }
 
-func (c *Conn) Price() float64 {
-	return c.data.D.P
-}
-
-func (c *Conn) PercentChange() (hour, day, week, month, trimester, year, yearToDate, allTime float64) {
-	return c.data.D.P1H, c.data.D.P24H, c.data.D.P7D,
-		c.data.D.P30D, c.data.D.P3M, c.data.D.P1Y, c.data.D.PYTD, c.data.D.PAll
+func (c *Conn) Price(currencyID int) (float64, bool) {
+	data, ok := c.data[currencyID]
+	return data.D.P, ok
 }
 
 type cryptoData struct {
@@ -54,9 +50,11 @@ func (c *Conn) startUpdatingPrice() {
 			return
 		}
 
-		err = json.Unmarshal(message, &c.data)
+		var data cryptoData
+		err = json.Unmarshal(message, &data)
 		if err != nil {
 			return
 		}
+		c.data[data.D.ID] = data
 	}
 }
