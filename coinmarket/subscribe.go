@@ -5,24 +5,22 @@ import (
 	"github.com/gorilla/websocket"
 	"strconv"
 	"strings"
+	"sync"
 )
 
-const (
-	WSCoinMarketURL           = "wss://push.coinmarketcap.com/"
-	currencySubscribeEndpoint = "ws?device=web&client_source=coin_detail_page"
-)
+const cmcURL = "wss://push.coinmarketcap.com/ws?device=web&client_source=coin_detail_page"
 
-const (
-	CurrencyBTC = iota + 1
-	CurrencyLTC
-)
-
-func Subscribe(currencies ...int) (*Conn, error) {
-	conn, _, err := websocket.DefaultDialer.Dial(WSCoinMarketURL+currencySubscribeEndpoint, map[string][]string{})
+func Subscribe(currencies ...int) (*CMC, error) {
+	conn, _, err := websocket.DefaultDialer.Dial(cmcURL, nil)
 	if err != nil {
 		return nil, err
 	}
-	newConn := &Conn{conn: conn, data: make(map[int]cryptoData)}
+	newConn := &CMC{
+		conn:         conn,
+		queues:       make(map[int][]CurrencyUpdateData),
+		latestUpdate: make(map[int]CurrencyUpdateData),
+	}
+	newConn.cond = sync.NewCond(&newConn.mu)
 
 	var stringCurrencies []string
 	for _, curr := range currencies {
