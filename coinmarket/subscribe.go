@@ -7,17 +7,12 @@ import (
 )
 
 const (
-	WSCoinMarketURL           = "wss://push.coinmarketcap.com/"
-	currencySubscribeEndpoint = "ws?device=web&client_source=coin_detail_page"
-)
-
-const (
 	CurrencyBTC = iota + 1
 	CurrencyLTC
 )
 
 func Subscribe(currency int) (*Conn, error) {
-	conn, _, err := websocket.DefaultDialer.Dial(WSCoinMarketURL+currencySubscribeEndpoint, nil)
+	conn, _, err := websocket.DefaultDialer.Dial("wss://push.coinmarketcap.com/ws?device=web&client_source=coin_detail_page", nil)
 	if err != nil {
 		return nil, err
 	}
