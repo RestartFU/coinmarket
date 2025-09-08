@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/restartfu/coinmarketcap/coinmarket/fiat"
+	"github.com/restartfu/coinmarketcap/coinmarketcap/fiat"
 )
 
 const cmcURL = "wss://push.coinmarketcap.com/ws?device=web&client_source=coin_detail_page"

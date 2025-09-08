@@ -39,12 +39,12 @@ func main() {
 		panic(err)
 	}
 
-	err = os.WriteFile("coinmarket/fiat/currencies_generated.go", []byte(dat), 0777)
+	err = os.WriteFile("coinmarketcap/fiat/currencies_generated.go", []byte(dat), 0777)
 	if err != nil {
 		panic(err)
 	}
 
-	cmd := exec.Command("go", "fmt", "coinmarket/fiat/currencies_generated.go")
+	cmd := exec.Command("go", "fmt", "coinmarketcap/fiat/currencies_generated.go")
 	err = cmd.Run()
 	if err != nil {
 		panic(err)

@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/restartfu/coinmarketcap/coinmarket"
-	"github.com/restartfu/coinmarketcap/coinmarket/fiat"
+	coinmarket "github.com/restartfu/coinmarketcap/coinmarketcap"
+	"github.com/restartfu/coinmarketcap/coinmarketcap/fiat"
 )
 
 func main() {
