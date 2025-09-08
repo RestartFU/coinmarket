@@ -22,7 +22,7 @@ type Subscriber struct {
 	queues map[int][]CurrencyUpdateData
 
 	latestUpdate  map[int]CurrencyUpdateData
-	currencies    []int
+	currencies    []Currency
 	fiatCurrency  fiat.Currency
 	rateConverter fiat.RateConverter
 
@@ -41,7 +41,7 @@ func NewSubscriber(fiatCurrency fiat.Currency, rateConverter fiat.RateConverter)
 	return sub
 }
 
-func (c *Subscriber) Subscribe(currencies ...int) error {
+func (c *Subscriber) Subscribe(currencies ...Currency) error {
 	c.currencies = currencies
 
 	conn, _, err := websocket.DefaultDialer.Dial(cmcURL, nil)
@@ -52,7 +52,7 @@ func (c *Subscriber) Subscribe(currencies ...int) error {
 
 	var stringIDs []string
 	for _, curr := range currencies {
-		stringIDs = append(stringIDs, strconv.Itoa(curr))
+		stringIDs = append(stringIDs, strconv.Itoa(curr.id))
 	}
 	idString := strings.Join(stringIDs, ",")
 
@@ -88,7 +88,7 @@ func (c *Subscriber) Revive() error {
 	return nil
 }
 
-func (c *Subscriber) Poll(currencyID int) (CurrencyUpdateData, error) {
+func (c *Subscriber) Poll(currency Currency) (CurrencyUpdateData, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -96,27 +96,29 @@ func (c *Subscriber) Poll(currencyID int) (CurrencyUpdateData, error) {
 		return CurrencyUpdateData{}, c.pollingErr
 	}
 
-	for len(c.queues[currencyID]) == 0 {
+	id := currency.id
+	for len(c.queues[id]) == 0 {
 		c.cond.Wait()
 	}
 
-	update := c.queues[currencyID][0]
-	rate, err := c.rateConverter.ConvertRate(fiat.USD, c.fiatCurrency)
-	if err != nil {
-		return CurrencyUpdateData{}, err
+	update := c.queues[id][0]
+	if c.rateConverter != nil {
+		rate, err := c.rateConverter.ConvertRate(fiat.USD, c.fiatCurrency)
+		if err != nil {
+			return CurrencyUpdateData{}, err
+		}
+		update.Price = update.Price * rate
+		update.Price1H = update.Price1H * rate
+		update.Price24H = update.Price24H * rate
+		update.Price7D = update.Price7D * rate
+		update.Price30D = update.Price30D * rate
+		update.Price3M = update.Price3M * rate
+		update.Price1Y = update.Price1Y * rate
+		update.PriceAllTime = update.PriceAllTime * rate
+		update.PriceYearToDate = update.PriceYearToDate * rate
 	}
 
-	update.Price = update.Price * rate
-	update.Price1H = update.Price1H * rate
-	update.Price24H = update.Price24H * rate
-	update.Price7D = update.Price7D * rate
-	update.Price30D = update.Price30D * rate
-	update.Price3M = update.Price3M * rate
-	update.Price1Y = update.Price1Y * rate
-	update.PriceAllTime = update.PriceAllTime * rate
-	update.PriceYearToDate = update.PriceYearToDate * rate
-
-	c.queues[currencyID] = c.queues[currencyID][1:]
+	c.queues[id] = c.queues[id][1:]
 	return update, nil
 }
 

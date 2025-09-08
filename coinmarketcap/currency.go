@@ -1,10 +1,23 @@
 package coinmarketcap
 
-const (
-	CurrencyBTC = iota + 1
-	CurrencyLTC
-	CurrencyKAS = 20396
+var (
+	CurrencyBTC = newCurrency("BTC", 1)
+	CurrencyLTC = newCurrency("LTC", 2)
+	CurrencyKAS = newCurrency("KAS", 20396)
 )
+
+type Currency struct {
+	symbol string
+	id     int
+}
+
+func newCurrency(symbol string, id int) Currency {
+	return Currency{symbol: symbol, id: id}
+}
+
+func (c Currency) String() string {
+	return c.symbol
+}
 
 type CurrencyUpdate struct {
 	Data      CurrencyUpdateData `json:"d"`
