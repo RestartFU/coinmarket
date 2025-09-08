@@ -1,5 +1,7 @@
 package fiat
 
+import "strings"
+
 type Currency struct {
 	symbol string
 }
@@ -14,13 +16,13 @@ func (c Currency) String() string {
 
 func init() {
 	for _, curr := range All() {
-		currencyBySymbol[curr.symbol] = curr
+		currencyBySymbol[strings.ToLower(curr.symbol)] = curr
 	}
 }
 
 var currencyBySymbol = map[string]Currency{}
 
 func BySymbol(s string) (Currency, bool) {
-	curr, ok := currencyBySymbol[s]
+	curr, ok := currencyBySymbol[strings.ToLower(s)]
 	return curr, ok
 }
