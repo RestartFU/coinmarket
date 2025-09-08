@@ -1,7 +1,5 @@
 package fiat
 
-import "strings"
-
 type Currency struct {
 	symbol string
 }
@@ -14,11 +12,15 @@ func (c Currency) String() string {
 	return c.symbol
 }
 
-func BySymbol(s string) (Currency, bool) {
+func init() {
 	for _, curr := range All() {
-		if strings.EqualFold(s, curr.symbol) {
-			return curr, true
-		}
+		currencyBySymbol[curr.symbol] = curr
 	}
-	return Currency{}, false
+}
+
+var currencyBySymbol = map[string]Currency{}
+
+func BySymbol(s string) (Currency, bool) {
+	curr, ok := currencyBySymbol[s]
+	return curr, ok
 }
