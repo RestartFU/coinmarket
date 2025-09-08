@@ -3,6 +3,7 @@ package coinmarket
 const (
 	CurrencyBTC = iota + 1
 	CurrencyLTC
+	CurrencyKAS = 20396
 )
 
 type CurrencyUpdate struct {
