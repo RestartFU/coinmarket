@@ -1,4 +1,4 @@
-package coinmarket
+package coinmarketcap
 
 const (
 	CurrencyBTC = iota + 1

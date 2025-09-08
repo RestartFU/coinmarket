@@ -1,4 +1,4 @@
-package coinmarket
+package coinmarketcap
 
 import (
 	"encoding/json"
