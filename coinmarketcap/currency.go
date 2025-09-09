@@ -4,6 +4,7 @@ var (
 	CurrencyBTC = newCurrency("BTC", 1)
 	CurrencyLTC = newCurrency("LTC", 2)
 	CurrencyKAS = newCurrency("KAS", 20396)
+	CurrencyXMR = newCurrency("KAS", 328)
 )
 
 type Currency struct {

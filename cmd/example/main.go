@@ -14,13 +14,13 @@ func main() {
 	go rateConverter.Start(time.Hour)
 
 	subscriber := coinmarket.NewSubscriber(fiat.CAD, rateConverter)
-	err := subscriber.Subscribe(coinmarket.CurrencyBTC)
+	err := subscriber.Subscribe(coinmarket.CurrencyXMR)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for {
-		data, err := subscriber.Poll(coinmarket.CurrencyBTC)
+		data, err := subscriber.Poll(coinmarket.CurrencyXMR)
 		if err != nil {
 			subscriber.Revive()
 			log.Println(err)
